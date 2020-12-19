@@ -616,3 +616,15 @@ Tok                = Spaces (Number | Special )
     foo = []+
     ]=]
 ] unit-test
+
+{ "" } [
+    EBNF: parse-empty-squote [=[
+    foo = ''
+    ]=] "" parse-empty-squote
+] unit-test
+
+{ "" } [
+    EBNF: parse-empty-dquote [=[
+    foo = ""
+    ]=] "" parse-empty-dquote
+] unit-test

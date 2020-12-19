@@ -115,8 +115,8 @@ C: <ebnf> ebnf
             [ CHAR: \ = ] satisfy
             [ "\"\\" member? ] satisfy 2seq ,
             [ CHAR: \" = not ] satisfy ,
-        ] choice* repeat1 "\"" "\"" surrounded-by ,
-        [ CHAR: ' = not ] satisfy repeat1 "'" "'" surrounded-by ,
+        ] choice* repeat0 "\"" "\"" surrounded-by ,
+        [ CHAR: ' = not ] satisfy repeat0 "'" "'" surrounded-by ,
     ] choice* [ "" flatten-as unescape-string ] action ;
 
 : non-terminal-parser ( -- parser )
@@ -529,9 +529,9 @@ ERROR: could-not-parse-ebnf ;
 : parse-ebnf ( string -- hashtable )
     ebnf-parser (parse) check-parse-result ast>> transform ;
 
-: ebnf>quot ( string -- hashtable quot )
+: ebnf>quot ( string -- hashtable quot: ( string -- results ) )
     parse-ebnf dup dup parser [ main of compile ] with-variable
-    [ compiled-parse ] curry [ with-scope ast>> ] curry ;
+    '[ [ _ compiled-parse ] with-scope ] ;
 
 PRIVATE>
 
@@ -539,12 +539,25 @@ SYNTAX: EBNF:
     reset-tokenizer
     scan-new-word dup scan-object
     ebnf>quot swapd
-    ( input -- ast ) define-declared "ebnf-parser" set-word-prop
-    reset-tokenizer ;
+    [ "ebnf-quot" set-word-prop ] 2keep
+    [ check-parse-result ast>> ] compose
+    ( input -- ast ) define-declared
+    "ebnf-parser" set-word-prop ;
+
+SYNTAX: PARTIAL-EBNF:
+    scan-new-word
+    scan-word "ebnf-quot" word-prop
+    [ ast>> ] compose
+    ( input -- ast ) define-declared ;
 
 : define-inline-ebnf ( ast string -- quot )
     reset-tokenizer
-    ebnf>quot nip
+    ebnf>quot [ check-parse-result ast>> ] compose nip
+    suffix! \ call suffix! reset-tokenizer ;
+
+: define-partial-inline-ebnf ( ast string -- quot )
+    reset-tokenizer
+    ebnf>quot [ ast>> ] compose nip
     suffix! \ call suffix! reset-tokenizer ;
 
 SYNTAX: EBNF[[ "]]" parse-multiline-string define-inline-ebnf ;
