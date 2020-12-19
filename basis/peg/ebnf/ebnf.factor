@@ -566,6 +566,12 @@ SYNTAX: EBNF[==[ "]==]" parse-multiline-string define-inline-ebnf ;
 SYNTAX: EBNF[===[ "]===]" parse-multiline-string define-inline-ebnf ;
 SYNTAX: EBNF[====[ "]====]" parse-multiline-string define-inline-ebnf ;
 
+SYNTAX: PARTIAL-EBNF[[ "]]" parse-multiline-string define-partial-inline-ebnf ;
+SYNTAX: PARTIAL-EBNF[=[ "]=]" parse-multiline-string define-partial-inline-ebnf ;
+SYNTAX: PARTIAL-EBNF[==[ "]==]" parse-multiline-string define-partial-inline-ebnf ;
+SYNTAX: PARTIAL-EBNF[===[ "]===]" parse-multiline-string define-partial-inline-ebnf ;
+SYNTAX: PARTIAL-EBNF[====[ "]====]" parse-multiline-string define-partial-inline-ebnf ;
+
 SYNTAX: EBNF-PARSER:
     reset-tokenizer
     scan-new-word
